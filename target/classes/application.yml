@@ -1,0 +1,29 @@
+spring:
+  #port: 8083
+  datasource:
+    url: jdbc:postgresql://localhost:5432/airretaillertest
+    username: postgres
+    password: 0912658511
+
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+external-url:
+  flight-amenities: http://localhost:3000/amenities
+
+server:
+  port: 8083 #set your portg
+
+
+
+
+
+
+
+
+
