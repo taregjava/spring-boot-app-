@@ -1,6 +1,9 @@
 package com.tareg.service.impl;
 
+import com.tareg.builder.CardDetailsBuilder;
+import com.tareg.constant.ConstantValues;
 import com.tareg.cto.CardDetailsDto;
+import com.tareg.cto.RequestWrapperDTO;
 import com.tareg.entity.CardDetails;
 import com.tareg.exception.CreditCardAlreadyExistException;
 import com.tareg.exception.CreditCardNotFoundById;
@@ -8,13 +11,17 @@ import com.tareg.exception.CreditCardNumberNotValidException;
 import com.tareg.helper.CreditCardHelper;
 import com.tareg.repo.CardDetailsRepos;
 import com.tareg.service.CardDetailsService;
+import com.tareg.util.CreditCardBuilderUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CardDetailsServiceImpl implements CardDetailsService {
@@ -23,6 +30,25 @@ public class CardDetailsServiceImpl implements CardDetailsService {
     @Autowired
     private CardDetailsRepos repos;
 
+
+    @Override
+    public RequestWrapperDTO cardById(String id) {
+        RequestWrapperDTO requestWrapperDTO = new RequestWrapperDTO();
+        Optional<CardDetails> findById= repos.findById(id);
+
+        if (findById.isPresent()){
+            List<CardDetailsBuilder> builderUtils= new ArrayList<>();
+            builderUtils.add(CreditCardBuilderUtils.getRegistrationBuilder(findById.get()));
+            requestWrapperDTO.setResponse(CreditCardBuilderUtils.buildForObjectMapper(ConstantValues.registration,builderUtils.stream().collect(Collectors.toList())));
+            return requestWrapperDTO;
+        }
+        return null;
+    }
+
+    @Override
+    public List<CardDetails> findAllCredit() {
+        return repos.findAll();
+    }
 
     @Override
     public CardDetails updatePost(String id, CardDetails cardDetails) {
@@ -72,6 +98,22 @@ public class CardDetailsServiceImpl implements CardDetailsService {
 			throw new ResourceNotFoundException("Post", "id", id);
 		}
 * */
+
+    /*
+    *  @Override
+    public RequestWrapperDTO getS3ById(String id) {
+        RequestWrapperDTO requestWrapperDTO = new RequestWrapperDTO();
+        Optional<S3ConfigurationEntity> findById= repo.findById(id);
+        if (findById.isPresent()){
+            List<S3ConfigBuilder> builderUtils= new ArrayList<>();
+            builderUtils.add(S3ConfigBuilderUtil.getRegistrationBuilder(findById.get()));
+            requestWrapperDTO.setResponse(S3ConfigBuilderUtil.buildForObjectMapper(ConstantValues.registration,builderUtils.stream().collect(Collectors.toList())));
+           return requestWrapperDTO;
+        }
+        return null;
+    }
+    *
+    * */
     @Override
     public CardDetails getCardById(String id) {
         CardDetails cardDetails =repos.findById(id).get();
