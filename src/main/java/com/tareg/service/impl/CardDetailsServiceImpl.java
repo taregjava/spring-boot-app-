@@ -11,14 +11,21 @@ import com.tareg.exception.CreditCardNumberNotValidException;
 import com.tareg.helper.CreditCardHelper;
 import com.tareg.repo.CardDetailsRepos;
 import com.tareg.service.CardDetailsService;
+import com.tareg.util.CommonUtils;
 import com.tareg.util.CreditCardBuilderUtils;
+import com.tareg.util.FopMapperUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,6 +50,47 @@ public class CardDetailsServiceImpl implements CardDetailsService {
             return requestWrapperDTO;
         }
         return null;
+    }
+
+    /*
+    *  FopEntity addFob = fopRepository.save(FopMapperUtils.mapToFopEntity(fop));
+            if (ObjectUtils.isNotEmpty(addFob)) {
+                return CommonUtils.mapToWrapper(
+                        fop, CommonUtils.buildForObjectMapper(Domain.FOP.getDescription(),
+                                FopMapperUtils.mapToFopBuilder(addFob)));
+    * */
+    @Override
+    public RequestWrapperDTO saveDto(@Valid CardDetailsDto dto) throws ParseException {
+        RequestWrapperDTO requestWrapperDTO = new RequestWrapperDTO();
+      //  boolean valid = CreditCardHelper.isValidCreditCard(dto.getCredNumber());
+      boolean valid = CreditCardHelper.validate2(dto.getCredNumber());
+     // boolean validDate= CreditCardHelper.validateCardExpiryDate(String.valueOf(dto.getExpire()));
+      //  List<CardDetailsBuilder> builderUtils= new ArrayList<>();
+       /* SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yy");
+        simpleDateFormat.setLenient(false);
+        Date expiry = simpleDateFormat.parse(dto.getExpire().toString());*/
+       // boolean expired = expiry.before(new Date());
+        if (valid) {
+            CardDetails cardDetails = repos.save(CreditCardBuilderUtils.mapToCardDetailsEntity(dto));
+          //  requestWrapperDTO.setResponse(CreditCardBuilderUtils.buildForObjectMapper(ConstantValues.registration,builderUtils.stream().collect(Collectors.toList())));
+           if (ObjectUtils.isNotEmpty(cardDetails)){
+               return CommonUtils.mapToWrapper(
+                       dto,CommonUtils.buildForObjectMapper(ConstantValues.registration,
+                               FopMapperUtils.mapToFopBuilder(cardDetails))
+               );
+           }
+            /*
+            *  if (ObjectUtils.isNotEmpty(addFob)) {
+                return CommonUtils.mapToWrapper(
+                        fop, CommonUtils.buildForObjectMapper(Domain.FOP.getDescription(),
+                                FopMapperUtils.mapToFopBuilder(addFob)));
+            * */
+
+            return requestWrapperDTO;
+        }
+    else {
+        throw new CreditCardNumberNotValidException(dto.getCredNumber());
+    }
     }
 
     @Override
@@ -160,5 +208,10 @@ public class CardDetailsServiceImpl implements CardDetailsService {
 	}
         *
         * */
+    }
+
+    @Override
+    public boolean isValid(String dateStr) {
+        return false;
     }
 }

@@ -12,12 +12,13 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestWrapperDTO {
+public class RequestWrapperDTO<T, U, W> {
 
-    private Object request;
-    private Object response;
-    private List<RegistrationError> errors;
-    private List<RegistrationStatus> status;
+    private T request;
+    private U response;
+    private W pageDetails;
+    private List<StatusResponse> errors;
+    private List<StatusResponse> status;
     private LocalDateTime timeStamp;
 
 }

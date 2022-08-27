@@ -5,6 +5,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class CreditCardHelper {
@@ -105,6 +113,22 @@ public class CreditCardHelper {
 
         return maskedNumber.toString();
     }
+
+    public static boolean validate(final String n) {
+        if (n == null || n.isEmpty()) return false;
+        boolean x = true;
+        int sum = 0;
+        int temp = 0;
+
+        for (int i = n.length() - 1; i >= 0; i--) {
+            temp = n.charAt(i) - '0';
+            sum += (x = !x) ? temp > 4 ? temp * 2 - 9 : temp * 2 : temp;
+        }
+
+        return sum % 10 == 0;
+
+    }
+
     public static boolean isValidCreditCard(String creditCardNo) {
 
         String visaRegex = "^4[0-9]{12}(?:[0-9]{3})?$";
@@ -123,7 +147,123 @@ public class CreditCardHelper {
         return false;
 
     }
+   public static boolean validate2(String creditCardNumber) {
+        return algorithmCheck(creditCardNumber);
+    }
 
+    /*
+     * @param int of number that should be split into individual
+     * digits
+     * @return the sum of the digits
+     */
+    private static int sumOfDigits(int number) {
+        String[] tempNumberArray = Integer.toString(number).split("");
+        int total = 0;
+        for (String digit : tempNumberArray) {
+            total += Integer.parseInt(digit);
+        }
+
+        return total;
+    }
+    public static boolean checkDate(String dateStr) {
+
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        sdf.setLenient(false);
+
+        try {
+            sdf.parse(dateStr);
+
+            int currentYear = Year.now().getValue();
+            String str[] = dateStr.split("/");
+            int year = Integer.parseInt(str[2]);
+
+            if(year > currentYear || year < currentYear-100){
+                return false;
+            }
+
+        } catch (NumberFormatException | ParseException ex){
+
+            return false;  // Returns false if parsing fails (in case of bad input).
+        }
+
+        return true; // Returns true for valid date Strings
+    }
+  /*  public static boolean dateExpire(String datExpire) throws ParseException {
+        String input = "11/12"; // for example
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yy");
+        simpleDateFormat.setLenient(false);
+        Date expiry = simpleDateFormat.parse(datExpire);
+        boolean expired = expiry.before(new Date());
+        return expired;
+    }*/
+    public static List<Integer> parseNumber(String creditCardNumber) {
+        List<Integer> creditCardNumberList = new ArrayList<>();
+
+        for (char number : creditCardNumber.toCharArray()) {
+            int tempNumber = Character.getNumericValue(number);
+            creditCardNumberList.add(tempNumber);
+        }
+
+        return creditCardNumberList;
+    }
+
+    /*
+     * @param credit card number as a List of Integers and
+     * the IIN range to test
+     * @return the IIN value to test
+     */
+    public static int parseIIN(List<Integer> creditCardNumberList, int range) {
+        StringBuilder IINString = new StringBuilder(range);
+        int IIN;
+
+        for (int i = 0; i < range; i++) {
+            IINString.append(creditCardNumberList.get(i));
+        }
+        IIN = Integer.parseInt(IINString.toString());
+
+        return IIN;
+    }
+    private static boolean algorithmCheck(String creditCardNumber) {
+        List<Integer> numberList = parseNumber(creditCardNumber);
+        boolean isValid = false;
+        int listSize = numberList.size();
+        int[] tempArray = new int[listSize];
+        int sum = 0;
+
+        // Reverse the order
+        Collections.reverse(numberList);
+
+        // Double the value of every second digit
+        for (int i = 1; i < listSize; i += 2) {
+            int tempNumber = numberList.get(i) * 2;
+
+            /*
+             * If doubling results in a single digit number then add it to list
+             * otherwise, add each digit together to obtain a single digit number
+             */
+            if (tempNumber < 10) {
+                tempArray[i] = tempNumber;
+            } else {
+                tempArray[i] = sumOfDigits(tempNumber);
+            }
+        }
+
+        // Add the remaining digits
+        for (int i = 0; i < listSize; i += 2) {
+            tempArray[i] = numberList.get(i);
+        }
+
+        // Take sum of all digits
+        for (int number : tempArray) {
+            sum += number;
+        }
+        // If total modulo 10 is equal to 0 then the card is valid
+        if (sum % 10 == 0) {
+            isValid = true;
+        }
+
+        return isValid;
+    }
    /* public static void main(String[] args) {
        String cardNumber= "3793545081623065";
        System.out.println(maskCardNumber(cardNumber));
@@ -168,4 +308,10 @@ public class CreditCardHelper {
         }
 
     }*/
+
+
+      public static boolean validateCardExpiryDate(String expiryDate) {
+            return expiryDate.matches("(?:0[1-9]|1[0-2])/[0-9]{2}");
+
+    }
 }

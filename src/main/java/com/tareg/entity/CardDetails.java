@@ -10,6 +10,8 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.Date;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -25,9 +27,11 @@ public class CardDetails {
 			@org.hibernate.annotations.Parameter(name = CustomSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%d") })
 	@Column(name = "cardId")
 	private String id;
+	@NotBlank(message = "Name is mandatory")
 	private String name;
+	@NotBlank(message = "credNumber is mandatory")
 	private String credNumber;
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yy-MM-dd")
 	private Date expire;
 	
 

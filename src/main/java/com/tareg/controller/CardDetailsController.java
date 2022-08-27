@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,11 @@ public class CardDetailsController {
         return new ResponseEntity<>(service.cardById(id), HttpStatus.OK);
     }
 
+    @PostMapping("/dto")
+    // @ApiOperation(value = "Add Fops",consumes = "application/json",produces = "application/json")
+    public ResponseEntity<RequestWrapperDTO> addCard(@Valid @RequestBody CardDetailsDto cardDetails) throws ParseException {
+        return new ResponseEntity<>(service.saveDto(cardDetails), HttpStatus.OK);
+    }
 
     @GetMapping
     public List<CardDetailsDto> getAllCard() {
