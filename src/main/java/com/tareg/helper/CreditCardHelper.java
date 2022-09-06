@@ -308,8 +308,33 @@ public class CreditCardHelper {
         }
 
     }*/
-
-
+   public static boolean isDateValid(String s) {
+       SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+       Date d = asDate(s);
+       if (sdf.format(d).equals(s)) {
+           return true;
+       } else {
+           return false;
+       }
+   }
+    public static Date asDate(String string) {
+        try {
+            if (isIsoFormat(string)) {
+                throw new RuntimeException("Date does not fit into ISO date format.");
+            }
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = simpleDateFormat.parse(string);
+            return date;
+        } catch (ParseException parseException) {
+            throw new RuntimeException(parseException);
+        }
+    }
+    public static boolean isIsoFormat(String string) {
+        if (!string.matches("^[\\d\\-]*$")) {
+            return true;
+        }
+        return false;
+    }
       public static boolean validateCardExpiryDate(String expiryDate) {
             return expiryDate.matches("(?:0[1-9]|1[0-2])/[0-9]{2}");
 

@@ -6,6 +6,7 @@ import com.tareg.cto.CardDetailsDto;
 import com.tareg.cto.RequestWrapperDTO;
 import com.tareg.entity.CardDetails;
 import com.tareg.exception.CreditCardAlreadyExistException;
+import com.tareg.exception.CreditCardDateNotValidException;
 import com.tareg.exception.CreditCardNotFoundById;
 import com.tareg.exception.CreditCardNumberNotValidException;
 import com.tareg.helper.CreditCardHelper;
@@ -64,21 +65,24 @@ public class CardDetailsServiceImpl implements CardDetailsService {
         RequestWrapperDTO requestWrapperDTO = new RequestWrapperDTO();
       //  boolean valid = CreditCardHelper.isValidCreditCard(dto.getCredNumber());
       boolean valid = CreditCardHelper.validate2(dto.getCredNumber());
-     // boolean validDate= CreditCardHelper.validateCardExpiryDate(String.valueOf(dto.getExpire()));
+    // boolean validDate= CreditCardHelper.isDateValid(String.valueOf(dto.getExpire()));
       //  List<CardDetailsBuilder> builderUtils= new ArrayList<>();
        /* SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yy");
         simpleDateFormat.setLenient(false);
         Date expiry = simpleDateFormat.parse(dto.getExpire().toString());*/
        // boolean expired = expiry.before(new Date());
         if (valid) {
-            CardDetails cardDetails = repos.save(CreditCardBuilderUtils.mapToCardDetailsEntity(dto));
-          //  requestWrapperDTO.setResponse(CreditCardBuilderUtils.buildForObjectMapper(ConstantValues.registration,builderUtils.stream().collect(Collectors.toList())));
-           if (ObjectUtils.isNotEmpty(cardDetails)){
-               return CommonUtils.mapToWrapper(
-                       dto,CommonUtils.buildForObjectMapper(ConstantValues.registration,
-                               FopMapperUtils.mapToFopBuilder(cardDetails))
-               );
-           }
+            //if (validDate) {
+
+
+                CardDetails cardDetails = repos.save(CreditCardBuilderUtils.mapToCardDetailsEntity(dto));
+                //  requestWrapperDTO.setResponse(CreditCardBuilderUtils.buildForObjectMapper(ConstantValues.registration,builderUtils.stream().collect(Collectors.toList())));
+                if (ObjectUtils.isNotEmpty(cardDetails)) {
+                    return CommonUtils.mapToWrapper(
+                            dto, CommonUtils.buildForObjectMapper(ConstantValues.registration,
+                                    FopMapperUtils.mapToFopBuilder(cardDetails))
+                    );
+                }
             /*
             *  if (ObjectUtils.isNotEmpty(addFob)) {
                 return CommonUtils.mapToWrapper(
@@ -86,11 +90,12 @@ public class CardDetailsServiceImpl implements CardDetailsService {
                                 FopMapperUtils.mapToFopBuilder(addFob)));
             * */
 
-            return requestWrapperDTO;
-        }
-    else {
-        throw new CreditCardNumberNotValidException(dto.getCredNumber());
-    }
+                return requestWrapperDTO;
+            } else {
+                throw new CreditCardNumberNotValidException(dto.getCredNumber());
+            }
+       // }
+       // throw new CreditCardDateNotValidException(dto.getCredNumber());
     }
 
     @Override

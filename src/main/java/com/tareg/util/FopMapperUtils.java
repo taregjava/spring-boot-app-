@@ -3,6 +3,8 @@ package com.tareg.util;
 import com.tareg.builder.CardDetailsBuilder;
 import com.tareg.cto.CardDetailsDto;
 import com.tareg.entity.CardDetails;
+import com.tareg.helper.AESExample;
+import com.tareg.helper.CreditCardHelper;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
@@ -14,10 +16,11 @@ public class FopMapperUtils {
 
     }
     public static CardDetailsBuilder mapToFopBuilder(CardDetails entity){
+        String masked= CreditCardHelper.maskCardNumber(AESExample.decrypt(entity.getCredNumber()));
         return CardDetailsBuilder.builder()
                 .id(entity.getId())
                 .name(entity.getName())
-                .credNumber(entity.getCredNumber())
+                .credNumber(masked)
                 .expire(entity.getExpire())
                 .build();
     }

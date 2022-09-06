@@ -3,6 +3,7 @@ package com.tareg.util;
 import com.tareg.builder.CardDetailsBuilder;
 import com.tareg.cto.CardDetailsDto;
 import com.tareg.entity.CardDetails;
+import com.tareg.helper.AESExample;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
@@ -13,13 +14,13 @@ import java.util.stream.Collectors;
 
 public class CreditCardBuilderUtils {
 
-    public static CardDetailsBuilder getRegistrationBuilder(CardDetails s3config) {
+    public static CardDetailsBuilder getRegistrationBuilder(CardDetails dto) {
         CardDetailsBuilder buildData = null;
 
-        buildData = CardDetailsBuilder.builder().id(String.valueOf(s3config.getId()))
-                .name(s3config.getName())
-                .credNumber(s3config.getCredNumber())
-                .expire(s3config.getExpire())
+        buildData = CardDetailsBuilder.builder().id(String.valueOf(dto.getId()))
+                .name(dto.getName())
+                .credNumber(AESExample.decrypt(dto.getCredNumber()))
+                .expire(dto.getExpire())
 
                 .build();
 
@@ -38,7 +39,7 @@ public class CreditCardBuilderUtils {
         if (StringUtils.isNotBlank(dto.getName()))
             entity.setName(dto.getName());
         if (StringUtils.isNotBlank(dto.getCredNumber()))
-            entity.setCredNumber(dto.getCredNumber());
+            entity.setCredNumber(AESExample.encrypt(dto.getCredNumber()));
         if (StringUtils.isNotBlank(String.valueOf(dto.getExpire())))
             entity.setExpire(dto.getExpire());
       /*  if (StringUtils.isNotBlank(dto.getExpirationDate()))
