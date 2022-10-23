@@ -3,10 +3,12 @@ package com.tareg.util;
 import com.tareg.builder.CardDetailsBuilder;
 import com.tareg.cto.CardDetailsDto;
 import com.tareg.entity.CardDetails;
+import com.tareg.enums.CardType;
 import com.tareg.helper.AESExample;
 import com.tareg.helper.CreditCardHelper;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,8 @@ public class FopMapperUtils {
                 .name(entity.getName())
                 .credNumber(masked)
                 .expire(entity.getExpire())
+
+                //.cardType(Collections.singletonList(String.valueOf(entity.getCardType())))
                 .build();
     }
 
@@ -38,6 +42,10 @@ public class FopMapperUtils {
             entity.setCredNumber(dto.getCredNumber());
         if (StringUtils.isNotBlank(String.valueOf(dto.getExpire())))
             entity.setExpire(dto.getExpire());
+
+    /*    if (StringUtils.isNotBlank(dto.getCardType()))
+            entity.setCardType(CardType.valueOf(dto.getCardType()));*/
+
       /*  if (StringUtils.isNotBlank(dto.getExpirationDate()))
             entity.setExpirationDate(dto.getExpirationDate());*/
 

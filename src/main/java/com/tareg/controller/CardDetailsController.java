@@ -23,11 +23,16 @@ public class CardDetailsController {
 
     @Autowired
     private CardDetailsService service;
-    @PostMapping
+
+    /*@PostMapping("/saveDto")
+    public ResponseEntity<CardDetailsDto> createPost2(@RequestBody CardDetailsDto postDto) {
+        return service.createCard(postDto);
+    }*/
+  /*  @PostMapping
     public ResponseEntity<CardDetailsDto> createPost(@RequestBody CardDetailsDto postDto) {
        return service.createCard(postDto);
     }
-
+*/
     @GetMapping("dto/{id}")
     public ResponseEntity<RequestWrapperDTO> getRegistrationById(@PathVariable String id){
         return new ResponseEntity<>(service.cardById(id), HttpStatus.OK);
@@ -35,8 +40,8 @@ public class CardDetailsController {
 
     @PostMapping("/dto")
     // @ApiOperation(value = "Add Fops",consumes = "application/json",produces = "application/json")
-    public ResponseEntity<RequestWrapperDTO> addCard(@Valid @RequestBody CardDetailsDto cardDetails) throws ParseException {
-        return new ResponseEntity<>(service.saveDto(cardDetails), HttpStatus.OK);
+    public ResponseEntity<RequestWrapperDTO> addCard(@RequestBody CardDetailsDto cardDetailsdto) throws ParseException {
+        return new ResponseEntity<>(service.saveDto(cardDetailsdto), HttpStatus.OK);
     }
 
     @GetMapping

@@ -8,7 +8,11 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.Year;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -18,22 +22,7 @@ import java.util.List;
 public class CreditCardHelper {
 
 
-    /*
-    *
-    *   public CreditCard add(String name, String ccNumber, int limit) throws CreditCardAlreadyExistException, CreditCardNumberNotValidException {
-        if (CreditCardHelper.isValid(ccNumber)) {
-            if (creditCardRepository.findByName(name) != null) {
-                throw new CreditCardAlreadyExistException(ccNumber);
-            } else {
-                CreditCard creditCard = new CreditCard(name, ccNumber, limit);
-                return creditCardRepository.save(creditCard);
-            }
-        } else {
-            throw new CreditCardNumberNotValidException(ccNumber);
-        }
-    }
-    *
-    * */
+
     public static boolean Check(Long ccNumber)
     {
         if (ccNumber==null) {
@@ -113,7 +102,20 @@ public class CreditCardHelper {
 
         return maskedNumber.toString();
     }
-
+    public static void isValidDay(String dateToVerify){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            sdf.setLenient(false);
+            sdf.parse(dateToVerify);
+            LocalDate date = LocalDate.parse(dateToVerify);
+            LocalDate today = LocalDate.now();
+            if (date.isAfter(today)) {
+                System.out.println("Date in the future");
+            }
+        } catch (ParseException e) {
+            System.out.println("Invalid Date");
+        }
+    }
     public static boolean validate(final String n) {
         if (n == null || n.isEmpty()) return false;
         boolean x = true;
@@ -263,6 +265,36 @@ public class CreditCardHelper {
         }
 
         return isValid;
+    }
+    final static DateTimeFormatter dtfymd =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    final static DateTimeFormatter dtfym =
+            DateTimeFormatter.ofPattern("yyyy-MM");
+    public static boolean isValidDay1(String dateToVerify) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+       // simpleDateFormat.format(dateToVerify);
+        LocalDate today = LocalDate.now();
+        LocalDate date = null;
+        if (dateToVerify.length() < 10) {
+            date = YearMonth.parse(dateToVerify, dtfym).atDay(1);
+            today = YearMonth.from(today).atDay(1);
+        } else {
+            date = LocalDate.parse(dateToVerify, dtfymd);
+        }
+        try {
+            return date.isAfter(today);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public static void main(String[] args) {
+        boolean validdate = isValidDay1("2024-01-09");
+        if (validdate) {
+            System.out.println("success");
+        } else {
+            System.out.println("unsuccess");
+        }
     }
    /* public static void main(String[] args) {
        String cardNumber= "3793545081623065";

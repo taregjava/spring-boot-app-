@@ -61,10 +61,10 @@ public class CardDetailsServiceImpl implements CardDetailsService {
                                 FopMapperUtils.mapToFopBuilder(addFob)));
     * */
     @Override
-    public RequestWrapperDTO saveDto(@Valid CardDetailsDto dto) throws ParseException {
+    public RequestWrapperDTO saveDto(CardDetailsDto cardDetailsDto) {
         RequestWrapperDTO requestWrapperDTO = new RequestWrapperDTO();
       //  boolean valid = CreditCardHelper.isValidCreditCard(dto.getCredNumber());
-      boolean valid = CreditCardHelper.validate2(dto.getCredNumber());
+      boolean valid = CreditCardHelper.validate(cardDetailsDto.getCredNumber());
     // boolean validDate= CreditCardHelper.isDateValid(String.valueOf(dto.getExpire()));
       //  List<CardDetailsBuilder> builderUtils= new ArrayList<>();
        /* SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yy");
@@ -75,11 +75,11 @@ public class CardDetailsServiceImpl implements CardDetailsService {
             //if (validDate) {
 
 
-                CardDetails cardDetails = repos.save(CreditCardBuilderUtils.mapToCardDetailsEntity(dto));
+                CardDetails cardDetails = repos.save(CreditCardBuilderUtils.mapToCardDetailsEntity(cardDetailsDto));
                 //  requestWrapperDTO.setResponse(CreditCardBuilderUtils.buildForObjectMapper(ConstantValues.registration,builderUtils.stream().collect(Collectors.toList())));
                 if (ObjectUtils.isNotEmpty(cardDetails)) {
                     return CommonUtils.mapToWrapper(
-                            dto, CommonUtils.buildForObjectMapper(ConstantValues.registration,
+                            cardDetailsDto, CommonUtils.buildForObjectMapper(ConstantValues.registration,
                                     FopMapperUtils.mapToFopBuilder(cardDetails))
                     );
                 }
@@ -92,7 +92,7 @@ public class CardDetailsServiceImpl implements CardDetailsService {
 
                 return requestWrapperDTO;
             } else {
-                throw new CreditCardNumberNotValidException(dto.getCredNumber());
+                throw new CreditCardNumberNotValidException(cardDetailsDto.getCredNumber());
             }
        // }
        // throw new CreditCardDateNotValidException(dto.getCredNumber());
@@ -185,8 +185,11 @@ public class CardDetailsServiceImpl implements CardDetailsService {
 
     @Override
     public ResponseEntity<CardDetailsDto> createCard(CardDetailsDto postDto) throws CreditCardAlreadyExistException, CreditCardNumberNotValidException {
-        boolean valid = CreditCardHelper.isValidCreditCard(postDto.getCredNumber());
-        if (valid) {
+            boolean valid = CreditCardHelper.isValidCreditCard(postDto.getCredNumber());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+        simpleDateFormat.format(postDto.getExpire());
+        boolean validDate= CreditCardHelper.isValidDay1(String.valueOf(postDto.getExpire()));
+        if (valid && validDate) {
          // convert DTO to entity
         CardDetails postRequest = modelMapper.map(postDto, CardDetails.class);
 

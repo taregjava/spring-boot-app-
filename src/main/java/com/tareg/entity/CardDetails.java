@@ -1,6 +1,7 @@
 package com.tareg.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.tareg.enums.CardType;
 import com.tareg.util.CustomSequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -33,9 +35,19 @@ public class CardDetails {
 	private String credNumber;
 	@JsonFormat(pattern="yy-MM-dd")
 	private Date expire;
-	
+/*
+	@Enumerated(EnumType.STRING)
+	@Column(name = "cardType")
+	private CardType cardType;
+*/
 
-	
-	
-	
+	/*@NotBlank(message = "APIs Granted cannot be blank")
+	private List<String> marks;
+*/
+	/*@ElementCollection // 1
+	@CollectionTable(name = "my_list", joinColumns = @JoinColumn(name = "cardId")) // 2
+	@Column(name = "list") // 3
+	private List<String> list;*/
+
+
 }
